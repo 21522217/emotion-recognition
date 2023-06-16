@@ -3,12 +3,12 @@ import numpy as np
 import keras.utils as image
 import warnings
 warnings.filterwarnings("ignore")
-from tensorflow.keras.utils import img_to_array
+from keras.utils import img_to_array
 from keras import models
 import matplotlib.pyplot as plt
 
 # load model
-retrievedModel = models.load_model("./api/model.pt")
+retrievedModel = models.load_model("../api/model.pt")
 
 
 face_haar_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
