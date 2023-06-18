@@ -1,4 +1,5 @@
 - Model references:
+    + https://github.com/AmosIvor/deploy-flask-app-movie-recommendation-to-azure/tree/master (Ninh & Vũ)
     + https://github.com/dhruvpandey662/Emotion-detection/blob/main/videotester.py
     + https://www.youtube.com/watch?v=S--SD4QbGps
     + https://www.youtube.com/watch?v=zGP_nYmZd9c 
