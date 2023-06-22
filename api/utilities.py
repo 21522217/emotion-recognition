@@ -13,7 +13,10 @@ face_haar_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_f
 cap = cv2.VideoCapture(0)
 
 def render_emotion_detector():
-
+    ################ THE FUNC IS NOT COMPLETE AS IT SHOWS A NEW WINDOW ON CALLING THE WEB
+    ################# NEEDS TO CHANGE WHOLE FUNCTION
+    #################
+    #################
     while True:
         ret, test_img = cap.read()  # captures frame and returns boolean value and captured image
         if not ret:
