@@ -25,7 +25,7 @@
     
 
 --- SPECIAL THANKS TO: 
-                        Nguyen D. Vo - https://scholar.google.com.vn/citations?hl=en&user=LMLI9ZsAAAAJ
-                        Khang Nguyen - https://scholar.google.com.vn/citations?user=MH6YRMYpWWMC&hl=en
- and Whole              UIT-Together group - https://uit-together.github.io/ 
+Nguyen D. Vo - https://scholar.google.com.vn/citations?hl=en&user=LMLI9ZsAAAAJ
+Khang Nguyen - https://scholar.google.com.vn/citations?user=MH6YRMYpWWMC&hl=en
+UIT-Together group - https://uit-together.github.io/ 
 ---
