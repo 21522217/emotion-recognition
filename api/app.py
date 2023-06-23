@@ -1,31 +1,18 @@
 from flask import Flask, render_template, Response
-import cv2
+from utilities import render_emotion_detector
 
 
 app = Flask(__name__)
-camera = cv2.VideoCapture(0)
 
-def generate_frames():
-    while True:
-        success, frame = camera.read()
-        if not success: 
-            break
-        else:
-            ret, buffer = cv2.imencode(".jpg", frame)
-            frame=buffer.tobytes()
-        
-
-        yield(b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-@app.route("/")
+@app.route('/')
 def index():
-    return render_template("index.html")
+    # Video streaming at home page
+    return render_template('index.html')
 
-@app.route("/video")
+@app.route('/video')
 def video():
-    return Response(generate_frames(), mimetype="multipart/x-mixed-replace; boundary=frame")
+    # Video streaming route. Put this in the src attribute of an img tag.
+    return Response(render_emotion_detector(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-
-if __name__ == "__main__":
+if __name__=="__main__":
     app.run(debug=True)
