@@ -24,8 +24,8 @@
     We plan to publish this app on platforms like AWS, AZURE                            4
     
 
---- SPECIAL THANKS TO: 
-Nguyen D. Vo - https://scholar.google.com.vn/citations?hl=en&user=LMLI9ZsAAAAJ
-Khang Nguyen - https://scholar.google.com.vn/citations?user=MH6YRMYpWWMC&hl=en
-UIT-Together group - https://uit-together.github.io/ 
----
+--- SPECIAL THANKS TO ---
+    Khang Nguyen - https://scholar.google.com.vn/citations?user=MH6YRMYpWWMC&hl=en          1
+    Nguyen D. Vo - https://scholar.google.com.vn/citations?hl=en&user=LMLI9ZsAAAAJ          2
+    UIT-Together group - https://uit-together.github.io/                                    3
+
