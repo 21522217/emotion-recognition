@@ -4,6 +4,7 @@
     + https://github.com/AmosIvor/deploy-flask-app-movie-recommendation-to-azure/tree/master (Ninh & Vũ)
     + https://github.com/dhruvpandey662/Emotion-detection/blob/main/videotester.py
     + https://github.com/krishnaik06/Flask-Web-Framework/tree/main/Tutorial%207
+    + https://github.com/seraj94ai/Flask-streaming-Pedestrians-detection-using-python-opencv-
     Video
     + https://www.youtube.com/watch?v=S--SD4QbGps
     + https://www.youtube.com/watch?v=zGP_nYmZd9c 
@@ -26,8 +27,5 @@
 --- SPECIAL THANKS TO: 
                         Nguyen D. Vo - https://scholar.google.com.vn/citations?hl=en&user=LMLI9ZsAAAAJ
                         Khang Nguyen - https://scholar.google.com.vn/citations?user=MH6YRMYpWWMC&hl=en
-
- and Whole UIT-Together group ---
-
-
---- UIT-Together Group: https://uit-together.github.io ---
+ and Whole              UIT-Together group - https://uit-together.github.io/ 
+---
