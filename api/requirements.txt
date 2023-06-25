@@ -1,0 +1,14 @@
+blinker
+click
+colorama
+itsdangerous
+Jinja2
+MarkupSafe
+Werkzeug
+scikit-learn
+pandas
+chardet
+numpy
+flask
+opencv-python
+tensorflow

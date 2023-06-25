@@ -1,11 +1,12 @@
 - Model references:
-
     Github
     + https://github.com/AmosIvor/deploy-flask-app-movie-recommendation-to-azure/tree/master (Ninh & Vũ)
     + https://github.com/dhruvpandey662/Emotion-detection/blob/main/videotester.py
     + https://github.com/krishnaik06/Flask-Web-Framework/tree/main/Tutorial%207
     + https://github.com/seraj94ai/Flask-streaming-Pedestrians-detection-using-python-opencv-
+
     Video
+
     + https://www.youtube.com/watch?v=S--SD4QbGps
     + https://www.youtube.com/watch?v=zGP_nYmZd9c 
     + https://www.youtube.com/watch?v=voieMVB3OzY&t=1631s (Mô hình hướng dẫn)
@@ -24,8 +25,11 @@
     We plan to publish this app on platforms like AWS, AZURE                            4
     
 
---- SPECIAL THANKS TO: 
-                        Nguyen D. Vo - https://scholar.google.com.vn/citations?hl=en&user=LMLI9ZsAAAAJ
-                        Khang Nguyen - https://scholar.google.com.vn/citations?user=MH6YRMYpWWMC&hl=en
- and Whole              UIT-Together group - https://uit-together.github.io/ 
----
+--- SPECIAL THANKS TO ---
+
+    Khang Nguyen - https://scholar.google.com.vn/citations?user=MH6YRMYpWWMC&hl=en          1
+
+    Nguyen D. Vo - https://scholar.google.com.vn/citations?hl=en&user=LMLI9ZsAAAAJ          2
+
+    UIT-Together group - https://uit-together.github.io/                                    3
+
