@@ -5,6 +5,16 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
 
+import org.opencv.android.OpenCVLoader;
+import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.objdetect.CascadeClassifier;
+import org.opencv.android.Utils;
+
+
+import android.graphics.Bitmap;
+
 public class ERDModule extends ReactContextBaseJavaModule {
 
     public ERDModule(ReactApplicationContext reactContext) {
@@ -17,11 +27,18 @@ public class ERDModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void SeizeMe(String message, Promise promise) {
+    public void RecognizeEmotion(String imagePath, Promise promise) {
+
         try {
-            promise.resolve(message + " khiem ngu");
+            if (OpenCVLoader.initDebug()) {
+
+                promise.resolve(imagePath);
+            } else {
+                promise.reject("OPEN_CV_INIT_ERROR", "OpenCV initialization failed");
+            }
         } catch (Exception e) {
-            promise.reject("fail: ", e);
+            promise.reject("INITIALIZATION_ERROR", e.getMessage());
         }
     }
+
 }

@@ -30,7 +30,7 @@ const ED = ({route, navigation}: EDProps) => {
   // IMAGE PROCESSING FROM NATIVE MODULE
   const processImage = async () => {
     try {
-      const result = await ERDModule.SeizeMe('the fuck');
+      const result = await ERDModule.RecognizeEmotion(imageUri);
       setImageUri(result);
     } catch(e) {
       console.log("Module fail: ", e)
