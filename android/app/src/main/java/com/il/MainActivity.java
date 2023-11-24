@@ -6,9 +6,6 @@ import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
 
-import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Core;
-
 public class MainActivity extends ReactActivity {
 
   /**
@@ -23,16 +20,9 @@ public class MainActivity extends ReactActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(null);
+    super.onCreate(savedInstanceState);
 
-    // Load OpenCV library
-    if (!OpenCVLoader.initDebug()) {
-      // Handle initialization error if necessary
-      // For example, display a message or log an error
-      System.err.println("OpenCV initialization failed.");
-    } else {
-      System.out.println("OpenCV initialized successfully.");
-    }
+
   }
 
   /**

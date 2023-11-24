@@ -25,7 +25,7 @@ public class DescriptorMatcher extends Algorithm {
     // internal usage only
     public static DescriptorMatcher __fromPtr__(long addr) { return new DescriptorMatcher(addr); }
 
-    // C++: enum <unnamed>
+    // C++: enum MatcherType (cv.DescriptorMatcher.MatcherType)
     public static final int
             FLANNBASED = 1,
             BRUTEFORCE = 2,
@@ -580,7 +580,7 @@ public class DescriptorMatcher extends Algorithm {
 
 
     //
-    // C++: static Ptr_DescriptorMatcher cv::DescriptorMatcher::create(int matcherType)
+    // C++: static Ptr_DescriptorMatcher cv::DescriptorMatcher::create(DescriptorMatcher_MatcherType matcherType)
     //
 
     public static DescriptorMatcher create(int matcherType) {
@@ -661,7 +661,7 @@ public class DescriptorMatcher extends Algorithm {
     // C++: static Ptr_DescriptorMatcher cv::DescriptorMatcher::create(String descriptorMatcherType)
     private static native long create_0(String descriptorMatcherType);
 
-    // C++: static Ptr_DescriptorMatcher cv::DescriptorMatcher::create(int matcherType)
+    // C++: static Ptr_DescriptorMatcher cv::DescriptorMatcher::create(DescriptorMatcher_MatcherType matcherType)
     private static native long create_1(int matcherType);
 
     // native support for java finalize()

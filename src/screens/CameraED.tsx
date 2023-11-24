@@ -4,7 +4,7 @@ import {
   Touchable,
   TouchableOpacity,
   View,
-  Modal,
+  Modal, 
 } from 'react-native';
 import React, {useState, useRef, useEffect} from 'react';
 
@@ -50,7 +50,7 @@ const CameraED = ({route, navigation}: HomeProps) => {
     if (cameraRef.current) {
       const options = {quality: 0.5, base64: true};
       const data = await cameraRef.current.takePictureAsync(options);
-      setPhotoUri(data.uri);
+      setPhotoUri(data.base64);
       setModalVisible(false);
     }
   };

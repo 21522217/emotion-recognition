@@ -16,8 +16,10 @@ import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {HomeStackParamsList} from '../router/HomeStack';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 
+import RNFS from 'react-native-fs';
+
 import {NativeModules} from 'react-native';
-const {ERDModule} = NativeModules;
+const {EDModule} = NativeModules;
 
 type EDProps = NativeStackScreenProps<HomeStackParamsList, 'ED'>;
 
@@ -30,10 +32,10 @@ const ED = ({route, navigation}: EDProps) => {
   // IMAGE PROCESSING FROM NATIVE MODULE
   const processImage = async () => {
     try {
-      const result = await ERDModule.RecognizeEmotion(imageUri);
-      setImageUri(result);
+      const result = await EDModule.RecognizeEmotions(imagePath)
+      setImageUri(result)
     } catch(e) {
-      console.log("Module fail: ", e)
+      console.log("MODULE FAIL: ", e)
     }
   };
 
@@ -42,7 +44,7 @@ const ED = ({route, navigation}: EDProps) => {
   };
   const ProcessImage = async () => {
     processImage();
-    console.log(imageUri)
+    console.log(imageUri);
   };
 
   useEffect(() => {
@@ -55,7 +57,7 @@ const ED = ({route, navigation}: EDProps) => {
       <View style={styles.container}>
         <Text style={styles.headText}>Do you want to recognize emotions?</Text>
         <View style={styles.bodyImage}>
-          <Image source={{uri: imagePath}} style={styles.image} />
+          <Image source={{uri: `data:image/jpeg;base64,${imageUri}`}} style={styles.image} />
         </View>
         <View style={styles.botBar}>
           <TouchableOpacity style={styles.button} onPress={returnHandler}>

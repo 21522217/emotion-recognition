@@ -14,42 +14,6 @@ import org.opencv.utils.Converters;
 
 public class Imgcodecs {
 
-    // C++: enum <unnamed>
-    public static final int
-            CV_LOAD_IMAGE_UNCHANGED = -1,
-            CV_LOAD_IMAGE_GRAYSCALE = 0,
-            CV_LOAD_IMAGE_COLOR = 1,
-            CV_LOAD_IMAGE_ANYDEPTH = 2,
-            CV_LOAD_IMAGE_ANYCOLOR = 4,
-            CV_LOAD_IMAGE_IGNORE_ORIENTATION = 128,
-            CV_IMWRITE_JPEG_QUALITY = 1,
-            CV_IMWRITE_JPEG_PROGRESSIVE = 2,
-            CV_IMWRITE_JPEG_OPTIMIZE = 3,
-            CV_IMWRITE_JPEG_RST_INTERVAL = 4,
-            CV_IMWRITE_JPEG_LUMA_QUALITY = 5,
-            CV_IMWRITE_JPEG_CHROMA_QUALITY = 6,
-            CV_IMWRITE_PNG_COMPRESSION = 16,
-            CV_IMWRITE_PNG_STRATEGY = 17,
-            CV_IMWRITE_PNG_BILEVEL = 18,
-            CV_IMWRITE_PNG_STRATEGY_DEFAULT = 0,
-            CV_IMWRITE_PNG_STRATEGY_FILTERED = 1,
-            CV_IMWRITE_PNG_STRATEGY_HUFFMAN_ONLY = 2,
-            CV_IMWRITE_PNG_STRATEGY_RLE = 3,
-            CV_IMWRITE_PNG_STRATEGY_FIXED = 4,
-            CV_IMWRITE_PXM_BINARY = 32,
-            CV_IMWRITE_EXR_TYPE = 48,
-            CV_IMWRITE_WEBP_QUALITY = 64,
-            CV_IMWRITE_PAM_TUPLETYPE = 128,
-            CV_IMWRITE_PAM_FORMAT_NULL = 0,
-            CV_IMWRITE_PAM_FORMAT_BLACKANDWHITE = 1,
-            CV_IMWRITE_PAM_FORMAT_GRAYSCALE = 2,
-            CV_IMWRITE_PAM_FORMAT_GRAYSCALE_ALPHA = 3,
-            CV_IMWRITE_PAM_FORMAT_RGB = 4,
-            CV_IMWRITE_PAM_FORMAT_RGB_ALPHA = 5,
-            CV_CVTIMG_FLIP = 1,
-            CV_CVTIMG_SWAP_RB = 2;
-
-
     // C++: enum ImreadModes (cv.ImreadModes)
     public static final int
             IMREAD_UNCHANGED = -1,
@@ -65,6 +29,20 @@ public class Imgcodecs {
             IMREAD_REDUCED_GRAYSCALE_8 = 64,
             IMREAD_REDUCED_COLOR_8 = 65,
             IMREAD_IGNORE_ORIENTATION = 128;
+
+
+    // C++: enum ImwriteEXRCompressionFlags (cv.ImwriteEXRCompressionFlags)
+    public static final int
+            IMWRITE_EXR_COMPRESSION_NO = 0,
+            IMWRITE_EXR_COMPRESSION_RLE = 1,
+            IMWRITE_EXR_COMPRESSION_ZIPS = 2,
+            IMWRITE_EXR_COMPRESSION_ZIP = 3,
+            IMWRITE_EXR_COMPRESSION_PIZ = 4,
+            IMWRITE_EXR_COMPRESSION_PXR24 = 5,
+            IMWRITE_EXR_COMPRESSION_B44 = 6,
+            IMWRITE_EXR_COMPRESSION_B44A = 7,
+            IMWRITE_EXR_COMPRESSION_DWAA = 8,
+            IMWRITE_EXR_COMPRESSION_DWAB = 9;
 
 
     // C++: enum ImwriteEXRTypeFlags (cv.ImwriteEXRTypeFlags)
@@ -86,12 +64,14 @@ public class Imgcodecs {
             IMWRITE_PNG_BILEVEL = 18,
             IMWRITE_PXM_BINARY = 32,
             IMWRITE_EXR_TYPE = (3 << 4) + 0,
+            IMWRITE_EXR_COMPRESSION = (3 << 4) + 1,
             IMWRITE_WEBP_QUALITY = 64,
             IMWRITE_PAM_TUPLETYPE = 128,
             IMWRITE_TIFF_RESUNIT = 256,
             IMWRITE_TIFF_XDPI = 257,
             IMWRITE_TIFF_YDPI = 258,
-            IMWRITE_TIFF_COMPRESSION = 259;
+            IMWRITE_TIFF_COMPRESSION = 259,
+            IMWRITE_JPEG2000_COMPRESSION_X1000 = 272;
 
 
     // C++: enum ImwritePAMFlags (cv.ImwritePAMFlags)
@@ -148,6 +128,9 @@ public class Imgcodecs {
      *    Portable image format - \*.pbm, \*.pgm, \*.ppm \*.pxm, \*.pnm (always supported)
      *   </li>
      *   <li>
+     *    PFM files - \*.pfm (see the *Note* section)
+     *   </li>
+     *   <li>
      *    Sun rasters - \*.sr, \*.ras (always supported)
      *   </li>
      *   <li>
@@ -199,6 +182,9 @@ public class Imgcodecs {
      *    If EXIF information is embedded in the image file, the EXIF orientation will be taken into account
      *     and thus the image will be rotated accordingly except if the flags REF: IMREAD_IGNORE_ORIENTATION
      *     or REF: IMREAD_UNCHANGED are passed.
+     *   </li>
+     *   <li>
+     *    Use the IMREAD_UNCHANGED flag to keep the floating point values from PFM image.
      *   </li>
      *   <li>
      *    By default number of pixels must be less than 2^30. Limit can be set using system
@@ -245,6 +231,9 @@ public class Imgcodecs {
      *    Portable image format - \*.pbm, \*.pgm, \*.ppm \*.pxm, \*.pnm (always supported)
      *   </li>
      *   <li>
+     *    PFM files - \*.pfm (see the *Note* section)
+     *   </li>
+     *   <li>
      *    Sun rasters - \*.sr, \*.ras (always supported)
      *   </li>
      *   <li>
@@ -296,6 +285,9 @@ public class Imgcodecs {
      *    If EXIF information is embedded in the image file, the EXIF orientation will be taken into account
      *     and thus the image will be rotated accordingly except if the flags REF: IMREAD_IGNORE_ORIENTATION
      *     or REF: IMREAD_UNCHANGED are passed.
+     *   </li>
+     *   <li>
+     *    Use the IMREAD_UNCHANGED flag to keep the floating point values from PFM image.
      *   </li>
      *   <li>
      *    By default number of pixels must be less than 2^30. Limit can be set using system
@@ -352,6 +344,78 @@ public class Imgcodecs {
 
 
     //
+    // C++:  bool cv::imreadmulti(String filename, vector_Mat& mats, int start, int count, int flags = IMREAD_ANYCOLOR)
+    //
+
+    /**
+     * Loads a of images of a multi-page image from a file.
+     *
+     * The function imreadmulti loads a specified range from a multi-page image from the specified file into a vector of Mat objects.
+     * @param filename Name of file to be loaded.
+     * @param start Start index of the image to load
+     * @param count Count number of images to load
+     * @param flags Flag that can take values of cv::ImreadModes, default with cv::IMREAD_ANYCOLOR.
+     * @param mats A vector of Mat objects holding each page, if more than one.
+     * SEE: cv::imread
+     * @return automatically generated
+     */
+    public static boolean imreadmulti(String filename, List<Mat> mats, int start, int count, int flags) {
+        Mat mats_mat = new Mat();
+        boolean retVal = imreadmulti_2(filename, mats_mat.nativeObj, start, count, flags);
+        Converters.Mat_to_vector_Mat(mats_mat, mats);
+        mats_mat.release();
+        return retVal;
+    }
+
+    /**
+     * Loads a of images of a multi-page image from a file.
+     *
+     * The function imreadmulti loads a specified range from a multi-page image from the specified file into a vector of Mat objects.
+     * @param filename Name of file to be loaded.
+     * @param start Start index of the image to load
+     * @param count Count number of images to load
+     * @param mats A vector of Mat objects holding each page, if more than one.
+     * SEE: cv::imread
+     * @return automatically generated
+     */
+    public static boolean imreadmulti(String filename, List<Mat> mats, int start, int count) {
+        Mat mats_mat = new Mat();
+        boolean retVal = imreadmulti_3(filename, mats_mat.nativeObj, start, count);
+        Converters.Mat_to_vector_Mat(mats_mat, mats);
+        mats_mat.release();
+        return retVal;
+    }
+
+
+    //
+    // C++:  size_t cv::imcount(String filename, int flags = IMREAD_ANYCOLOR)
+    //
+
+    /**
+     * Returns the number of images inside the give file
+     *
+     * The function imcount will return the number of pages in a multi-page image, or 1 for single-page images
+     * @param filename Name of file to be loaded.
+     * @param flags Flag that can take values of cv::ImreadModes, default with cv::IMREAD_ANYCOLOR.
+     * @return automatically generated
+     */
+    public static long imcount(String filename, int flags) {
+        return imcount_0(filename, flags);
+    }
+
+    /**
+     * Returns the number of images inside the give file
+     *
+     * The function imcount will return the number of pages in a multi-page image, or 1 for single-page images
+     * @param filename Name of file to be loaded.
+     * @return automatically generated
+     */
+    public static long imcount(String filename) {
+        return imcount_1(filename);
+    }
+
+
+    //
     // C++:  bool cv::imwrite(String filename, Mat img, vector_int params = std::vector<int>())
     //
 
@@ -368,8 +432,9 @@ public class Imgcodecs {
      *  16-bit unsigned (CV_16U) images can be saved in the case of PNG, JPEG 2000, and TIFF formats
      *   </li>
      *   <li>
-     *  32-bit float (CV_32F) images can be saved in TIFF, OpenEXR, and Radiance HDR formats; 3-channel
-     * (CV_32FC3) TIFF images will be saved using the LogLuv high dynamic range encoding (4 bytes per pixel)
+     *  32-bit float (CV_32F) images can be saved in PFM, TIFF, OpenEXR, and Radiance HDR formats;
+     *   3-channel (CV_32FC3) TIFF images will be saved using the LogLuv high dynamic range encoding
+     *   (4 bytes per pixel)
      *   </li>
      *   <li>
      *  PNG images with an alpha channel can be saved using this function. To do this, create
@@ -413,8 +478,9 @@ public class Imgcodecs {
      *  16-bit unsigned (CV_16U) images can be saved in the case of PNG, JPEG 2000, and TIFF formats
      *   </li>
      *   <li>
-     *  32-bit float (CV_32F) images can be saved in TIFF, OpenEXR, and Radiance HDR formats; 3-channel
-     * (CV_32FC3) TIFF images will be saved using the LogLuv high dynamic range encoding (4 bytes per pixel)
+     *  32-bit float (CV_32F) images can be saved in PFM, TIFF, OpenEXR, and Radiance HDR formats;
+     *   3-channel (CV_32FC3) TIFF images will be saved using the LogLuv high dynamic range encoding
+     *   (4 bytes per pixel)
      *   </li>
      *   <li>
      *  PNG images with an alpha channel can be saved using this function. To do this, create
@@ -521,6 +587,36 @@ public class Imgcodecs {
     }
 
 
+    //
+    // C++:  bool cv::haveImageReader(String filename)
+    //
+
+    /**
+     * Returns true if the specified image can be decoded by OpenCV
+     *
+     * @param filename File name of the image
+     * @return automatically generated
+     */
+    public static boolean haveImageReader(String filename) {
+        return haveImageReader_0(filename);
+    }
+
+
+    //
+    // C++:  bool cv::haveImageWriter(String filename)
+    //
+
+    /**
+     * Returns true if an image with the specified filename can be encoded by OpenCV
+     *
+     *  @param filename File name of the image
+     * @return automatically generated
+     */
+    public static boolean haveImageWriter(String filename) {
+        return haveImageWriter_0(filename);
+    }
+
+
 
 
     // C++:  Mat cv::imread(String filename, int flags = IMREAD_COLOR)
@@ -530,6 +626,14 @@ public class Imgcodecs {
     // C++:  bool cv::imreadmulti(String filename, vector_Mat& mats, int flags = IMREAD_ANYCOLOR)
     private static native boolean imreadmulti_0(String filename, long mats_mat_nativeObj, int flags);
     private static native boolean imreadmulti_1(String filename, long mats_mat_nativeObj);
+
+    // C++:  bool cv::imreadmulti(String filename, vector_Mat& mats, int start, int count, int flags = IMREAD_ANYCOLOR)
+    private static native boolean imreadmulti_2(String filename, long mats_mat_nativeObj, int start, int count, int flags);
+    private static native boolean imreadmulti_3(String filename, long mats_mat_nativeObj, int start, int count);
+
+    // C++:  size_t cv::imcount(String filename, int flags = IMREAD_ANYCOLOR)
+    private static native long imcount_0(String filename, int flags);
+    private static native long imcount_1(String filename);
 
     // C++:  bool cv::imwrite(String filename, Mat img, vector_int params = std::vector<int>())
     private static native boolean imwrite_0(String filename, long img_nativeObj, long params_mat_nativeObj);
@@ -545,5 +649,11 @@ public class Imgcodecs {
     // C++:  bool cv::imencode(String ext, Mat img, vector_uchar& buf, vector_int params = std::vector<int>())
     private static native boolean imencode_0(String ext, long img_nativeObj, long buf_mat_nativeObj, long params_mat_nativeObj);
     private static native boolean imencode_1(String ext, long img_nativeObj, long buf_mat_nativeObj);
+
+    // C++:  bool cv::haveImageReader(String filename)
+    private static native boolean haveImageReader_0(String filename);
+
+    // C++:  bool cv::haveImageWriter(String filename)
+    private static native boolean haveImageWriter_0(String filename);
 
 }

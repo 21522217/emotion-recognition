@@ -96,4 +96,6 @@
 
 
 
-// shit path: file:///data/user/0/com.il/cache/Camera/4efd3489-dc1b-47c2-a27c-9910c355e881.jpg
+// shit path: file:///data/user/0/com.il/cache/Camera/4efd3489-dc1b-47c2-a27c-9910c355e881.jpg  
+//            file:///data/user/0/com.il/cache/Camera/3807227d-e856-499c-8317-1f535c1a0ae7.jpg
+//            file:///data/user/0/com.il/cache/Camera/01929011-1850-4f3c-817e-73989c25894e.jpg
