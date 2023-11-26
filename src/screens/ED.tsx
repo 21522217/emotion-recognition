@@ -35,7 +35,7 @@ const ED = ({route, navigation}: EDProps) => {
       const result = await EDModule.RecognizeEmotions(imagePath)
       setImageUri(result)
     } catch(e) {
-      console.log("MODULE FAIL: ", e)
+      console.log("MODULE ERROR: ", e)
     }
   };
 
@@ -44,7 +44,6 @@ const ED = ({route, navigation}: EDProps) => {
   };
   const ProcessImage = async () => {
     processImage();
-    console.log(imageUri);
   };
 
   useEffect(() => {
