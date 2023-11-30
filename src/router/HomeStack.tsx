@@ -8,8 +8,16 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 export type HomeStackParamsList = {
   Home: undefined;
-  CameraED: {modalVisibility: boolean; imagePath: string | undefined};
-  ED: {imagePath: string | undefined};
+  CameraED: {
+    modalVisibility: boolean;
+    imagePath: string | undefined;
+    modelVersion: string | undefined;
+  };
+  ED: {
+    imagePath: string | undefined;
+    camType: boolean;
+    modelVersion: string | undefined;
+  };
 };
 
 const stack = createNativeStackNavigator<HomeStackParamsList>();
@@ -17,7 +25,8 @@ const stack = createNativeStackNavigator<HomeStackParamsList>();
 const HomeStack = () => {
   return (
     <stack.Navigator
-      screenOptions={{headerShown: false}} initialRouteName='Home'>
+      screenOptions={{headerShown: false}}
+      initialRouteName="Home">
       <stack.Screen name="Home" component={Home} />
       <stack.Screen name="CameraED" component={CameraED} />
       <stack.Screen name="ED" component={ED} />

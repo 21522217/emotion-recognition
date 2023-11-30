@@ -4,7 +4,7 @@ import {
   Touchable,
   TouchableOpacity,
   View,
-  Modal, 
+  Modal,
 } from 'react-native';
 import React, {useState, useRef, useEffect} from 'react';
 
@@ -23,7 +23,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 type HomeProps = NativeStackScreenProps<HomeStackParamsList, 'CameraED'>;
 
 const CameraED = ({route, navigation}: HomeProps) => {
-  const {modalVisibility, imagePath} = route.params;
+  const {modalVisibility, imagePath, modelVersion} = route.params;
 
   const [isModalVisible, setModalVisible] = useState<boolean>(modalVisibility);
   const [photoUri, setPhotoUri] = useState<string | undefined>(imagePath);
@@ -31,7 +31,7 @@ const CameraED = ({route, navigation}: HomeProps) => {
   const [cameraType, setCameraType] = useState(RNCamera.Constants.Type.back);
   const [isFlashMode, setIsFlashMode] = useState<'on' | 'off'>('off');
   const [isDisableFlash, setIsDisableFlash] = useState(false);
-  const [isTakePicture, setIsTakePicture] = useState(false)
+  const [isTakePicture, setIsTakePicture] = useState(false);
   const [detectedFaces, setDetectedFaces] = useState([]);
 
   const goBackHandler = () => {
@@ -66,10 +66,10 @@ const CameraED = ({route, navigation}: HomeProps) => {
   const detectFaceHandler = ({faces}: any) => {
     if (faces.length > 0) {
       setDetectedFaces(faces);
-      setIsTakePicture(true)
+      setIsTakePicture(true);
     } else {
-      setDetectedFaces([])
-      setIsTakePicture(false)
+      setDetectedFaces([]);
+      setIsTakePicture(false);
     }
   };
 
@@ -85,7 +85,11 @@ const CameraED = ({route, navigation}: HomeProps) => {
     if (isModalVisible == false && photoUri == undefined) {
       navigation.goBack();
     } else if (isModalVisible == false && photoUri != undefined) {
-      navigation.navigate('ED', {imagePath: photoUri});
+      navigation.navigate('ED', {
+        imagePath: photoUri,
+        camType: cameraType == RNCamera.Constants.Type.front ? true : false,
+        modelVersion: modelVersion,
+      });
     }
   }, [isModalVisible]);
 
@@ -99,24 +103,10 @@ const CameraED = ({route, navigation}: HomeProps) => {
             type={cameraType}
             flashMode={isFlashMode}
             faceDetectionMode={RNCamera.Constants.FaceDetection.Mode.accurate}
-            faceDetectionLandmarks={RNCamera.Constants.FaceDetection.Landmarks.all}
+            faceDetectionLandmarks={
+              RNCamera.Constants.FaceDetection.Landmarks.all
+            }
             onFacesDetected={detectFaceHandler}>
-            {detectedFaces.map((face: any, index) => (
-              <View
-                key={index}
-                style={{
-                  position: 'absolute',
-                  left: face.bounds.origin.x,
-                  top: face.bounds.origin.y,
-                  width: face.bounds.size.width,
-                  height: face.bounds.size.height,
-                  borderWidth: 2,
-                  borderColor: 'red',
-                  borderRadius: 5,
-                  backgroundColor: 'transparent',
-                }}
-              />
-            ))}
             <View style={styles.topBar}>
               <TouchableOpacity style={styles.goBack} onPress={goBackHandler}>
                 <Icon
@@ -134,7 +124,12 @@ const CameraED = ({route, navigation}: HomeProps) => {
                 <Icon name="sync" size={30} color={COLORS.primaryWhiteHex} />
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.takePicture}
+                disabled={detectedFaces.length == 0 ? true : false}
+                style={
+                  detectedFaces.length != 0
+                    ? styles.takePicture
+                    : styles.cantTakePicture
+                }
                 onPress={takePicture}
               />
               <TouchableOpacity
@@ -189,6 +184,13 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     backgroundColor: COLORS.primaryWhiteHex,
+    alignSelf: 'center',
+  },
+  cantTakePicture: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: COLORS.primaryDarkGreyHex,
     alignSelf: 'center',
   },
   switchCamType: {},

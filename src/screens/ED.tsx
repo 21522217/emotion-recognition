@@ -24,7 +24,7 @@ const {EDModule} = NativeModules;
 type EDProps = NativeStackScreenProps<HomeStackParamsList, 'ED'>;
 
 const ED = ({route, navigation}: EDProps) => {
-  const {imagePath} = route.params;
+  const {imagePath, camType, modelVersion} = route.params;
 
   const [isModalVisible, setIsModalVisible] = useState(true);
   const [imageUri, setImageUri] = useState<string | undefined>(imagePath);
@@ -32,7 +32,7 @@ const ED = ({route, navigation}: EDProps) => {
   // IMAGE PROCESSING FROM NATIVE MODULE
   const processImage = async () => {
     try {
-      const result = await EDModule.RecognizeEmotions(imagePath)
+      const result = await EDModule.RecognizeEmotions(modelVersion, imagePath, camType)
       setImageUri(result)
     } catch(e) {
       console.log("MODULE ERROR: ", e)

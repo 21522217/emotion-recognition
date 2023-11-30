@@ -124,6 +124,7 @@ dependencies {
     implementation project(':react-native-camera')
     implementation project(':react-native-vector-icons')
     implementation project(':react-native-fs')
+    implementation('org.tensorflow:tensorflow-lite:2.11.0')
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

@@ -1,7 +1,6 @@
 package com.il;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.util.Base64;
 import android.widget.Toast;
 
@@ -14,13 +13,30 @@ import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.android.Utils;
 
+import org.tensorflow.lite.Interpreter;
+import java.nio.ByteBuffer;
+import android.content.res.AssetFileDescriptor;
+import android.graphics.Bitmap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileInputStream;
+import java.nio.channels.FileChannel;
+import java.nio.MappedByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Comparator;
+
 
 public class EDModule extends ReactContextBaseJavaModule {
+    private Interpreter tflite;
+
     public EDModule(ReactApplicationContext reactContext) {
         super(reactContext);
     }
@@ -31,10 +47,24 @@ public class EDModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void RecognizeEmotions(String imageBase64, Promise promise) {
+    public void RecognizeEmotions(String modelVersion, String imageBase64, Boolean isFrontCamera, Promise promise) {
         try {
+            // Load model for usage
+            getTfliteInterpreter("emotion_model_" + modelVersion + ".tflite");
+
             // Decode the base64 string to a Mat (image) object
             Mat image = decodeBase64ToMat(imageBase64);
+
+            // Rotate the image based on the camera type for stable reasons
+            if (isFrontCamera) {
+                // For front camera, rotate 90 degrees counterclockwise
+                Core.transpose(image, image);
+                Core.flip(image, image, Core.ROTATE_90_CLOCKWISE);
+            } else {
+                // For back camera, rotate 90 degrees clockwise
+                Core.transpose(image, image);
+                Core.flip(image, image, Core.ROTATE_90_COUNTERCLOCKWISE);
+            }
 
             // Load the Haar Cascade Classifier for faces
             CascadeClassifier faceCascade = loadCascadeClassifierFromRawResource(
@@ -46,12 +76,36 @@ public class EDModule extends ReactContextBaseJavaModule {
             }
 
             // Perform face detection using CascadeClassifier
-            MatOfRect faces = new MatOfRect();
-            faceCascade.detectMultiScale(image, faces);
+            MatOfRect rawFaces = new MatOfRect();
+            faceCascade.detectMultiScale(image, rawFaces, 1.1, 3, 0, new Size(30, 30), new Size());
+            MatOfRect faces = filterAndSuppress(rawFaces);
 
             // Draw rectangles around detected faces
             for (Rect rect : faces.toArray()) {
-                Imgproc.rectangle(image, rect.tl(), rect.br(), new Scalar(255, 0, 0, 255), 2);
+                // Custom bounding box
+                int padding = 0;
+                rect.x = Math.max(0, rect.x - padding);
+                rect.y = Math.max(0, rect.y - padding);
+                rect.width += 2 * padding;
+                rect.height += 2 * padding;
+
+                // Crop the face from the image
+                Mat face = image.submat(rect);
+
+                // Preprocess the face image
+                Bitmap bitmap = convertMatToBitmap(face);
+                ByteBuffer inputBuffer = preprocessImage(bitmap);
+
+                // Run inference
+                float[][] emotionPredictions = new float[1][7]; // Adjust NUM_CLASSES based on your model
+                tflite.run(inputBuffer, emotionPredictions);
+
+                // Post process the results (get the predicted emotion)
+                String predictedEmotion = postprocessResults(emotionPredictions);
+
+                // Draw the rectangle around the face with the predicted emotion
+                Imgproc.rectangle(image, rect.tl(), rect.br(), new Scalar(255, 0, 255, 255), 10);
+                putText(image, predictedEmotion, rect.tl());
             }
 
             // Encode the image with rectangles around faces back to base64
@@ -64,27 +118,32 @@ public class EDModule extends ReactContextBaseJavaModule {
             promise.reject("FACE_DETECTION_ERROR", "Error detecting faces: " + e.getMessage());
         }
     }
-
+    private Interpreter getTfliteInterpreter(String modelFileName) throws IOException {
+        if (tflite == null) {
+            tflite = new Interpreter(loadModelFile(getReactApplicationContext(), modelFileName));
+        }
+        return tflite;
+    }
     private CascadeClassifier loadCascadeClassifierFromRawResource(String resourceName, String cascadeDirName) {
         try {
             // Get the resource ID for the cascade classifier
             int resourceId = R.raw.haarcascade_frontalface_default;
-    
+
             if (resourceId == 0) {
                 Toast.makeText(getReactApplicationContext(),
                         "Resource not found: " + resourceName, Toast.LENGTH_LONG).show();
                 return null;
             }
-    
+
             // Create a cascade directory in the private mode
             File cascadeDir = getReactApplicationContext().getDir(cascadeDirName, Context.MODE_PRIVATE);
-    
+
             // Create a file for the cascade classifier
             File cascadeFile = new File(cascadeDir, resourceName);
-    
+
             // Open the input stream for the resource
             InputStream is = getReactApplicationContext().getResources().openRawResource(resourceId);
-    
+
             // Write the contents of the InputStream to the cascade file
             try (FileOutputStream os = new FileOutputStream(cascadeFile)) {
                 byte[] buffer = new byte[4096];
@@ -95,10 +154,10 @@ public class EDModule extends ReactContextBaseJavaModule {
             } finally {
                 is.close();
             }
-    
+
             // Load the cascade classifier from the file
             CascadeClassifier cascadeClassifier = new CascadeClassifier(cascadeFile.getAbsolutePath());
-    
+
             // Display error messages if loading fails
             if (cascadeClassifier.empty()) {
                 Toast.makeText(getReactApplicationContext(),
@@ -107,7 +166,7 @@ public class EDModule extends ReactContextBaseJavaModule {
             } else {
                 return cascadeClassifier;
             }
-    
+
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(getReactApplicationContext(),
@@ -115,18 +174,140 @@ public class EDModule extends ReactContextBaseJavaModule {
             return null;
         }
     }
-    
-
     private Mat decodeBase64ToMat(String base64) {
         byte[] decodedBytes = Base64.decode(base64, Base64.DEFAULT);
         return Imgcodecs.imdecode(new MatOfByte(decodedBytes), Imgcodecs.IMREAD_UNCHANGED);
     }
-
     private String encodeMatToBase64(Mat mat) {
         MatOfByte matOfByte = new MatOfByte();
         Imgcodecs.imencode(".jpg", mat, matOfByte);
         byte[] byteArray = matOfByte.toArray();
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
+    private void putText(Mat image, String text, Point location) {
+        Imgproc.putText(image, text, location, Imgproc.FONT_HERSHEY_SIMPLEX, 3.0,
+                new Scalar(255, 255, 255), 2);
+    }
+    private MappedByteBuffer loadModelFile(Context context, String modelFileName) throws IOException {
+        AssetFileDescriptor fileDescriptor = context.getAssets().openFd(modelFileName);
+        FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
+        FileChannel fileChannel = inputStream.getChannel();
+        long startOffset = fileDescriptor.getStartOffset();
+        long declaredLength = fileDescriptor.getDeclaredLength();
+        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
+    }
+    private ByteBuffer preprocessImage(Bitmap bitmap) {
+        // Convert the Bitmap to a grayscale image with a fixed size of 48x48
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 48, 48, true);
+        Mat grayMat = new Mat(resizedBitmap.getHeight(), resizedBitmap.getWidth(), CvType.CV_8UC1);
+        Imgproc.cvtColor(bitmapToMat(resizedBitmap), grayMat, Imgproc.COLOR_RGB2GRAY);
+
+        // Normalize pixel values to be between 0 and 1
+        grayMat.convertTo(grayMat, CvType.CV_32F, 1.0 / 255.0);
+
+        // Flatten the image into a 1D array
+        float[] flatArray = new float[48 * 48];
+        grayMat.get(0, 0, flatArray);
+
+        // Convert the 1D array to a ByteBuffer
+        ByteBuffer inputBuffer = ByteBuffer.allocateDirect(4 * 48 * 48); // 4 bytes per float
+        inputBuffer.order(ByteOrder.nativeOrder());
+        for (float value : flatArray) {
+            inputBuffer.putFloat(value);
+        }
+        inputBuffer.rewind();
+
+        return inputBuffer;
+    }
+    private String postprocessResults(float[][] predictions) {
+        // Find the index of the maximum value in the predictions array
+        int maxIndex = 0;
+        float maxValue = predictions[0][0];
+        for (int i = 1; i < predictions[0].length; i++) {
+            if (predictions[0][i] > maxValue) {
+                maxIndex = i;
+                maxValue = predictions[0][i];
+            }
+        }
+
+        // Map the index to the corresponding emotion label
+        String[] emotions = {"angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"};
+        String predictedEmotion = emotions[maxIndex];
+
+        return predictedEmotion;
+    }
+    private Mat bitmapToMat(Bitmap bitmap) {
+        Mat mat = new Mat();
+        Bitmap bmp32 = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+        Utils.bitmapToMat(bmp32, mat);
+        return mat;
+    }
+    private Bitmap convertMatToBitmap(Mat mat) {
+        Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(mat, bitmap);
+        return bitmap;
+    }
+    private MatOfRect filterAndSuppress(MatOfRect rawFaces) {
+        // Convert the MatOfRect to an array for easy manipulation
+        Rect[] rawRectArray = rawFaces.toArray();
+
+        // Filter small faces
+        List<Rect> filteredRects = Arrays.stream(rawRectArray)
+                .filter(rect -> rect.area() > 500)
+                .collect(Collectors.toList());
+
+        // Perform non-maximum suppression
+        List<Rect> suppressedRects = nonMaxSuppression(filteredRects, 0);
+
+        // Convert the filtered and suppressed rectangles back to MatOfRect
+        MatOfRect filteredAndSuppressedFaces = new MatOfRect();
+        filteredAndSuppressedFaces.fromList(suppressedRects);
+
+        return filteredAndSuppressedFaces;
+    }
+
+    private List<Rect> nonMaxSuppression(List<Rect> rectangles, double overlapThreshold) {
+        // Sort rectangles by area in descending order
+        rectangles.sort(Comparator.comparingDouble(rect -> -rect.area()));
+
+        // List to store the final non-suppressed rectangles
+        List<Rect> nonSuppressedRects = new ArrayList<>();
+
+        // Iterate through rectangles and perform NMS
+        for (Rect rect : rectangles) {
+            boolean keep = true;
+
+            // Check for overlap with previously kept rectangles
+            for (Rect keptRect : nonSuppressedRects) {
+                double overlap = calculateOverlap(rect, keptRect);
+
+                // If overlap is above the threshold, suppress the current rectangle
+                if (overlap > overlapThreshold) {
+                    keep = false;
+                    break;
+                }
+            }
+
+            // If not suppressed, add the rectangle to the final list
+            if (keep) {
+                nonSuppressedRects.add(rect);
+            }
+        }
+
+        return nonSuppressedRects;
+    }
+
+    private double calculateOverlap(Rect rect1, Rect rect2) {
+        // Calculate the overlap between two rectangles
+        int intersectionWidth = Math.max(0, Math.min(rect1.x + rect1.width, rect2.x + rect2.width) - Math.max(rect1.x, rect2.x));
+        int intersectionHeight = Math.max(0, Math.min(rect1.y + rect1.height, rect2.y + rect2.height) - Math.max(rect1.y, rect2.y));
+        int intersectionArea = intersectionWidth * intersectionHeight;
+
+        double area1 = rect1.width * rect1.height;
+        double area2 = rect2.width * rect2.height;
+
+        // Calculate the overlap ratio
+        return intersectionArea / (area1 + area2 - intersectionArea);
     }
 
 }

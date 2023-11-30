@@ -19,12 +19,27 @@ type HomeProps = NativeStackScreenProps<HomeStackParamsList, 'Home'>;
 
 const Home = ({navigation}: HomeProps) => {
 
-  const invokeCamera = () => {
-    navigation.navigate('CameraED', {modalVisibility: true, imagePath: undefined});
+  const invokeCamera = (label: string) => {
+    navigation.navigate('CameraED', {
+      modalVisibility: true,
+      imagePath: undefined,
+      modelVersion: label,
+    });
   };
 
   // Define your camera card labels in an array
-  const cameraCardLabels = ['V01', 'V02', 'V03', 'V04'];
+  const cameraCardLabels = [
+    'V01',
+    'V02',
+    'V03',
+    'V04',
+    'V05',
+    'V06',
+    'V07',
+    'V08',
+    'V09',
+    'V10',
+  ];
 
   // Calculate the number of columns (2 columns in this case)
   const numColumns = 4;
@@ -42,15 +57,15 @@ const Home = ({navigation}: HomeProps) => {
     const row = (
       <View key={i} style={styles.row}>
         {rowItems.map(label => (
-          <CameraCard key={label} label={label} onPressHandler={invokeCamera} />
+          <CameraCard key={label} label={label} onPressHandler={() => invokeCamera(label)} />
         ))}
       </View>
     );
 
     rows.push(row);
   }
-  if (rows.length == 0){
-    return <ActivityIndicator />
+  if (rows.length == 0) {
+    return <ActivityIndicator />;
   }
 
   return (
@@ -74,7 +89,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
   text: {
     fontSize: 16,
