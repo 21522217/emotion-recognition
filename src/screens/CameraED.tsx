@@ -28,7 +28,7 @@ const CameraED = ({route, navigation}: HomeProps) => {
   const [isModalVisible, setModalVisible] = useState<boolean>(modalVisibility);
   const [photoUri, setPhotoUri] = useState<string | undefined>(imagePath);
   const cameraRef = useRef<RNCamera | null>(null);
-  const [cameraType, setCameraType] = useState(RNCamera.Constants.Type.back);
+  const [cameraType, setCameraType] = useState(RNCamera.Constants.Type.front);
   const [isFlashMode, setIsFlashMode] = useState<'on' | 'off'>('off');
   const [isDisableFlash, setIsDisableFlash] = useState(false);
   const [isTakePicture, setIsTakePicture] = useState(false);
@@ -37,15 +37,15 @@ const CameraED = ({route, navigation}: HomeProps) => {
   const goBackHandler = () => {
     setModalVisible(false);
   };
-  const switchCameraType = () => {
-    setCameraType((prev: any) => {
-      if (prev == RNCamera.Constants.Type.back) {
-        return RNCamera.Constants.Type.front;
-      } else {
-        return RNCamera.Constants.Type.back;
-      }
-    });
-  };
+  // const switchCameraType = () => {
+  //   setCameraType((prev: any) => {
+  //     if (prev == RNCamera.Constants.Type.back) {
+  //       return RNCamera.Constants.Type.front;
+  //     } else {
+  //       return RNCamera.Constants.Type.back;
+  //     }
+  //   });
+  // };
   const takePicture = async () => {
     if (cameraRef.current) {
       const options = {quality: 0.5, base64: true};
@@ -54,15 +54,15 @@ const CameraED = ({route, navigation}: HomeProps) => {
       setModalVisible(false);
     }
   };
-  const switchFlashMode = () => {
-    setIsFlashMode(prev => {
-      if (prev == 'off') {
-        return 'on';
-      } else {
-        return 'off';
-      }
-    });
-  };
+  // const switchFlashMode = () => {
+  //   setIsFlashMode(prev => {
+  //     if (prev == 'off') {
+  //       return 'on';
+  //     } else {
+  //       return 'off';
+  //     }
+  //   });
+  // };
   const detectFaceHandler = ({faces}: any) => {
     if (faces.length > 0) {
       setDetectedFaces(faces);
@@ -73,14 +73,14 @@ const CameraED = ({route, navigation}: HomeProps) => {
     }
   };
 
-  useEffect(() => {
-    if (cameraType == RNCamera.Constants.Type.front) {
-      setIsFlashMode('off');
-      setIsDisableFlash(true);
-    } else {
-      setIsDisableFlash(false);
-    }
-  }, [cameraType]);
+  // useEffect(() => {
+  //   if (cameraType == RNCamera.Constants.Type.front) {
+  //     setIsFlashMode('off');
+  //     setIsDisableFlash(true);
+  //   } else {
+  //     setIsDisableFlash(false);
+  //   }
+  // }, [cameraType]);
   useEffect(() => {
     if (isModalVisible == false && photoUri == undefined) {
       navigation.goBack();
@@ -119,37 +119,11 @@ const CameraED = ({route, navigation}: HomeProps) => {
 
             <View style={styles.bottomBar}>
               <TouchableOpacity
-                style={styles.switchCamType}
-                onPress={switchCameraType}>
-                <Icon name="sync" size={30} color={COLORS.primaryWhiteHex} />
-              </TouchableOpacity>
-              <TouchableOpacity
                 disabled={detectedFaces.length == 0 ? true : false}
-                style={
-                  detectedFaces.length != 0
-                    ? styles.takePicture
-                    : styles.cantTakePicture
+                style={[styles.takePicture, detectedFaces.length == 0 ? styles.cantTakePicture : null]
                 }
                 onPress={takePicture}
               />
-              <TouchableOpacity
-                disabled={isDisableFlash}
-                style={styles.toggleFlash}
-                onPress={switchFlashMode}>
-                {isFlashMode == 'on' ? (
-                  <Icon name="flash" size={30} color={COLORS.primaryWhiteHex} />
-                ) : (
-                  <Icon
-                    name="flash-off"
-                    size={30}
-                    color={
-                      isDisableFlash
-                        ? COLORS.primaryLightGreyHex
-                        : COLORS.primaryWhiteHex
-                    }
-                  />
-                )}
-              </TouchableOpacity>
             </View>
           </RNCamera>
         )}
@@ -180,17 +154,17 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   takePicture: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 75,
+    height: 75,
+    borderRadius: 75 / 2,
     backgroundColor: COLORS.primaryWhiteHex,
     alignSelf: 'center',
+    borderWidth: 3,
+    borderColor: COLORS.primaryOrangeHex,
   },
   cantTakePicture: {
-    width: 50,
-    height: 50,
     borderRadius: 25,
-    backgroundColor: COLORS.primaryDarkGreyHex,
+    opacity: 90,
     alignSelf: 'center',
   },
   switchCamType: {},

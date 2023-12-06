@@ -4,19 +4,12 @@ import {
   View,
   Image,
   Modal,
-  Touchable,
   TouchableOpacity,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {COLORS} from '../theme/theme';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import {useNavigation} from '@react-navigation/native';
-import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {HomeStackParamsList} from '../router/HomeStack';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-
-import RNFS from 'react-native-fs';
 
 import {NativeModules} from 'react-native';
 const {EDModule} = NativeModules;

@@ -2,6 +2,7 @@ import React from 'react';
 
 import HomeStack from './HomeStack';
 import Lectures from '../screens/Lectures';
+import AboutUs from '../screens/AboutUs';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import {BlurView} from '@react-native-community/blur';
@@ -12,6 +13,7 @@ import {StyleSheet} from 'react-native';
 export type AppStackParamsList = {
   HomePage: undefined;
   Lectures: undefined;
+  AboutUs: undefined;
 };
 
 const stack = createBottomTabNavigator<AppStackParamsList>();
@@ -52,6 +54,19 @@ export default function AppStack() {
           tabBarIcon: ({focused, color, size}) => (
             <Icon
               name="book"
+              size={30}
+              color={focused ? COLORS.primaryOrangeHex : COLORS.primaryGreyHex}
+            />
+          ),
+        }}
+      />
+      <stack.Screen
+        name="AboutUs"
+        component={AboutUs}
+        options={{
+          tabBarIcon: ({focused, color, size}) => (
+            <Icon
+              name="fork"
               size={30}
               color={focused ? COLORS.primaryOrangeHex : COLORS.primaryGreyHex}
             />

@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-
 public class EDModule extends ReactContextBaseJavaModule {
     private Interpreter tflite;
 
@@ -76,9 +75,8 @@ public class EDModule extends ReactContextBaseJavaModule {
             }
 
             // Perform face detection using CascadeClassifier
-            MatOfRect rawFaces = new MatOfRect();
-            faceCascade.detectMultiScale(image, rawFaces, 1.1, 3, 0, new Size(30, 30), new Size());
-            MatOfRect faces = filterAndSuppress(rawFaces);
+            MatOfRect faces = new MatOfRect();
+            faceCascade.detectMultiScale(image, faces, 1.1, 9, 0, new Size(50, 50), new Size());
 
             // Draw rectangles around detected faces
             for (Rect rect : faces.toArray()) {
@@ -92,12 +90,12 @@ public class EDModule extends ReactContextBaseJavaModule {
                 // Crop the face from the image
                 Mat face = image.submat(rect);
 
-                // Preprocess the face image
+                 // Preprocess the face image
                 Bitmap bitmap = convertMatToBitmap(face);
                 ByteBuffer inputBuffer = preprocessImage(bitmap);
 
                 // Run inference
-                float[][] emotionPredictions = new float[1][7]; // Adjust NUM_CLASSES based on your model
+                float[][] emotionPredictions = new float[1][7]; // Adjust NUM_CLASSES base on your model
                 tflite.run(inputBuffer, emotionPredictions);
 
                 // Post process the results (get the predicted emotion)
@@ -118,12 +116,14 @@ public class EDModule extends ReactContextBaseJavaModule {
             promise.reject("FACE_DETECTION_ERROR", "Error detecting faces: " + e.getMessage());
         }
     }
+
     private Interpreter getTfliteInterpreter(String modelFileName) throws IOException {
         if (tflite == null) {
             tflite = new Interpreter(loadModelFile(getReactApplicationContext(), modelFileName));
         }
         return tflite;
     }
+
     private CascadeClassifier loadCascadeClassifierFromRawResource(String resourceName, String cascadeDirName) {
         try {
             // Get the resource ID for the cascade classifier
@@ -174,20 +174,24 @@ public class EDModule extends ReactContextBaseJavaModule {
             return null;
         }
     }
+
     private Mat decodeBase64ToMat(String base64) {
         byte[] decodedBytes = Base64.decode(base64, Base64.DEFAULT);
         return Imgcodecs.imdecode(new MatOfByte(decodedBytes), Imgcodecs.IMREAD_UNCHANGED);
     }
+
     private String encodeMatToBase64(Mat mat) {
         MatOfByte matOfByte = new MatOfByte();
         Imgcodecs.imencode(".jpg", mat, matOfByte);
         byte[] byteArray = matOfByte.toArray();
         return Base64.encodeToString(byteArray, Base64.DEFAULT);
     }
+
     private void putText(Mat image, String text, Point location) {
         Imgproc.putText(image, text, location, Imgproc.FONT_HERSHEY_SIMPLEX, 3.0,
                 new Scalar(255, 255, 255), 2);
     }
+
     private MappedByteBuffer loadModelFile(Context context, String modelFileName) throws IOException {
         AssetFileDescriptor fileDescriptor = context.getAssets().openFd(modelFileName);
         FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
@@ -196,6 +200,7 @@ public class EDModule extends ReactContextBaseJavaModule {
         long declaredLength = fileDescriptor.getDeclaredLength();
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
     }
+
     private ByteBuffer preprocessImage(Bitmap bitmap) {
         // Convert the Bitmap to a grayscale image with a fixed size of 48x48
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 48, 48, true);
@@ -219,6 +224,7 @@ public class EDModule extends ReactContextBaseJavaModule {
 
         return inputBuffer;
     }
+
     private String postprocessResults(float[][] predictions) {
         // Find the index of the maximum value in the predictions array
         int maxIndex = 0;
@@ -231,83 +237,23 @@ public class EDModule extends ReactContextBaseJavaModule {
         }
 
         // Map the index to the corresponding emotion label
-        String[] emotions = {"angry", "disgust", "fear", "happy", "sad", "surprise", "neutral"};
+        String[] emotions = { "angry", "disgust", "fear", "happy", "sad", "surprise", "neutral" };
         String predictedEmotion = emotions[maxIndex];
 
         return predictedEmotion;
     }
+
     private Mat bitmapToMat(Bitmap bitmap) {
         Mat mat = new Mat();
         Bitmap bmp32 = bitmap.copy(Bitmap.Config.ARGB_8888, true);
         Utils.bitmapToMat(bmp32, mat);
         return mat;
     }
+
     private Bitmap convertMatToBitmap(Mat mat) {
         Bitmap bitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(mat, bitmap);
         return bitmap;
-    }
-    private MatOfRect filterAndSuppress(MatOfRect rawFaces) {
-        // Convert the MatOfRect to an array for easy manipulation
-        Rect[] rawRectArray = rawFaces.toArray();
-
-        // Filter small faces
-        List<Rect> filteredRects = Arrays.stream(rawRectArray)
-                .filter(rect -> rect.area() > 500)
-                .collect(Collectors.toList());
-
-        // Perform non-maximum suppression
-        List<Rect> suppressedRects = nonMaxSuppression(filteredRects, 0);
-
-        // Convert the filtered and suppressed rectangles back to MatOfRect
-        MatOfRect filteredAndSuppressedFaces = new MatOfRect();
-        filteredAndSuppressedFaces.fromList(suppressedRects);
-
-        return filteredAndSuppressedFaces;
-    }
-
-    private List<Rect> nonMaxSuppression(List<Rect> rectangles, double overlapThreshold) {
-        // Sort rectangles by area in descending order
-        rectangles.sort(Comparator.comparingDouble(rect -> -rect.area()));
-
-        // List to store the final non-suppressed rectangles
-        List<Rect> nonSuppressedRects = new ArrayList<>();
-
-        // Iterate through rectangles and perform NMS
-        for (Rect rect : rectangles) {
-            boolean keep = true;
-
-            // Check for overlap with previously kept rectangles
-            for (Rect keptRect : nonSuppressedRects) {
-                double overlap = calculateOverlap(rect, keptRect);
-
-                // If overlap is above the threshold, suppress the current rectangle
-                if (overlap > overlapThreshold) {
-                    keep = false;
-                    break;
-                }
-            }
-
-            // If not suppressed, add the rectangle to the final list
-            if (keep) {
-                nonSuppressedRects.add(rect);
-            }
-        }
-
-        return nonSuppressedRects;
-    }
-
-    private double calculateOverlap(Rect rect1, Rect rect2) {
-        // Calculate the overlap between two rectangles
-        int intersectionWidth = Math.max(0, Math.min(rect1.x + rect1.width, rect2.x + rect2.width) - Math.max(rect1.x, rect2.x));
-        int intersectionHeight = Math.max(0, Math.min(rect1.y + rect1.height, rect2.y + rect2.height) - Math.max(rect1.y, rect2.y));
-        int intersectionArea = intersectionWidth * intersectionHeight;
-
-        double area1 = rect1.width * rect1.height;
-        double area2 = rect2.width * rect2.height;
-
-        // Calculate the overlap ratio
-        return intersectionArea / (area1 + area2 - intersectionArea);
     }
 
 }
