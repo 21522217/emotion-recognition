@@ -156,15 +156,14 @@ const styles = StyleSheet.create({
   takePicture: {
     width: 75,
     height: 75,
-    borderRadius: 75 / 2,
+    borderRadius: 75/2,
     backgroundColor: COLORS.primaryWhiteHex,
     alignSelf: 'center',
     borderWidth: 3,
     borderColor: COLORS.primaryOrangeHex,
   },
   cantTakePicture: {
-    borderRadius: 25,
-    opacity: 90,
+    backgroundColor: COLORS.primaryBlackRGBA,
     alignSelf: 'center',
   },
   switchCamType: {},
