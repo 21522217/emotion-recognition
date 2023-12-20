@@ -21,14 +21,19 @@ const ED = ({route, navigation}: EDProps) => {
 
   const [isModalVisible, setIsModalVisible] = useState(true);
   const [imageUri, setImageUri] = useState<string | undefined>(imagePath);
+  const [isFinishProceed, setIsFinishProceed] = useState(false);
 
   // IMAGE PROCESSING FROM NATIVE MODULE
   const processImage = async () => {
     try {
-      const result = await EDModule.RecognizeEmotions(modelVersion, imagePath, camType)
-      setImageUri(result)
-    } catch(e) {
-      console.log("MODULE ERROR: ", e)
+      const result = await EDModule.RecognizeEmotions(
+        modelVersion,
+        imagePath,
+        camType,
+      );
+      setImageUri(result);
+    } catch (e) {
+      console.log('MODULE ERROR: ', e);
     }
   };
 
@@ -36,8 +41,10 @@ const ED = ({route, navigation}: EDProps) => {
     setIsModalVisible(false);
   };
   const ProcessImage = async () => {
-    processImage();
+    await processImage();
+    setIsFinishProceed(true);
   };
+  const SaveImage = () => {};
 
   useEffect(() => {
     if (isModalVisible == false) {
@@ -49,14 +56,25 @@ const ED = ({route, navigation}: EDProps) => {
       <View style={styles.container}>
         <Text style={styles.headText}>Do you want to recognize emotions?</Text>
         <View style={styles.bodyImage}>
-          <Image source={{uri: `data:image/jpeg;base64,${imageUri}`}} style={styles.image} />
+          <Image
+            source={{uri: `data:image/jpeg;base64,${imageUri}`}}
+            style={styles.image}
+          />
         </View>
         <View style={styles.botBar}>
           <TouchableOpacity style={styles.button} onPress={returnHandler}>
-            <Text style={styles.buttonText}>Cancel</Text>
+            <Text style={styles.buttonText}>
+              {isFinishProceed == false ? 'Cancel' : 'Return'}
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={ProcessImage}>
-            <Text style={styles.buttonText}>Proceed</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              isFinishProceed == false ? ProcessImage : SaveImage;
+            }}>
+            <Text style={styles.buttonText}>
+              {isFinishProceed == false ? 'Proceed' : 'Save'}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

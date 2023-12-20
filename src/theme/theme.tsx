@@ -36,6 +36,7 @@ interface Spacing {
     primaryRedHex: string;
     primaryOrangeHex: string;
     primaryBlackHex: string;
+    primaryDarkBlueHex: string;
     primaryDarkGreyHex: string;
     secondaryDarkGreyHex: string;
     primaryGreyHex: string;
@@ -51,6 +52,7 @@ interface Spacing {
     primaryRedHex: '#DC3535',
     primaryOrangeHex: '#D17842',
     primaryBlackHex: '#0C0F14',
+    primaryDarkBlueHex: '#192A56',
     primaryDarkGreyHex: '#141921',
     secondaryDarkGreyHex: '#21262E',
     primaryGreyHex: '#252A32',
