@@ -10,6 +10,8 @@ import React, {useEffect, useState} from 'react';
 import {COLORS} from '../theme/theme';
 import {HomeStackParamsList} from '../router/HomeStack';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
+import {} from 'react-native-fs';
 
 import {NativeModules} from 'react-native';
 const {EDModule} = NativeModules;
@@ -20,15 +22,20 @@ const ED = ({route, navigation}: EDProps) => {
   const {imagePath, camType, modelVersion} = route.params;
 
   const [isModalVisible, setIsModalVisible] = useState(true);
-  const [imageUri, setImageUri] = useState<string | undefined>(imagePath);
+  const [imageUri, setImageUri] = useState<string>(imagePath);
+  const [isImageProceeded, setIsImageProceeded] = useState<boolean>(false);
 
   // IMAGE PROCESSING FROM NATIVE MODULE
   const processImage = async () => {
     try {
-      const result = await EDModule.RecognizeEmotions(modelVersion, imagePath, camType)
-      setImageUri(result)
-    } catch(e) {
-      console.log("MODULE ERROR: ", e)
+      const result = await EDModule.RecognizeEmotions(
+        modelVersion,
+        imagePath,
+        camType,
+      );
+      setImageUri(result);
+    } catch (e) {
+      console.log('MODULE ERROR: ', e);
     }
   };
 
@@ -36,7 +43,14 @@ const ED = ({route, navigation}: EDProps) => {
     setIsModalVisible(false);
   };
   const ProcessImage = async () => {
-    processImage();
+    await processImage();
+    setIsImageProceeded(true);
+  };
+  const SaveImageHandler = async (imageUri: string) => {
+    try {
+    } catch (error) {
+      console.error('Error saving image to camera roll:', error);
+    }
   };
 
   useEffect(() => {
@@ -47,17 +61,38 @@ const ED = ({route, navigation}: EDProps) => {
   return (
     <Modal animationType="slide" transparent={false} visible={isModalVisible}>
       <View style={styles.container}>
-        <Text style={styles.headText}>Do you want to recognize emotions?</Text>
+        {isImageProceeded == false ? (
+          <Text style={styles.headText}>
+            Do you want to recognize emotions?
+          </Text>
+        ) : (
+          <Text style={styles.headText}>😄🤑🙂🤔😮‍💨😠🫨🤯</Text>
+        )}
         <View style={styles.bodyImage}>
-          <Image source={{uri: `data:image/jpeg;base64,${imageUri}`}} style={styles.image} />
+          <Image
+            source={{uri: `data:image/jpeg;base64,${imageUri}`}}
+            style={styles.image}
+          />
         </View>
         <View style={styles.botBar}>
-          <TouchableOpacity style={styles.button} onPress={returnHandler}>
-            <Text style={styles.buttonText}>Cancel</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={ProcessImage}>
-            <Text style={styles.buttonText}>Proceed</Text>
-          </TouchableOpacity>
+          {isImageProceeded == false ? (
+            <>
+              <TouchableOpacity style={styles.button} onPress={returnHandler}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => ProcessImage()}>
+                <Text style={styles.buttonText}>Proceed</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <TouchableOpacity style={styles.button} onPress={returnHandler}>
+                <Text style={styles.buttonText}>Return</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </View>
     </Modal>

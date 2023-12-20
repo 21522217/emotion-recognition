@@ -14,7 +14,7 @@ export type HomeStackParamsList = {
     modelVersion: string | undefined;
   };
   ED: {
-    imagePath: string | undefined;
+    imagePath: string;
     camType: boolean;
     modelVersion: string | undefined;
   };
