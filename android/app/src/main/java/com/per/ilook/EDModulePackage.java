@@ -1,4 +1,4 @@
-package com.il;
+package com.per.ilook;
 
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;

@@ -1,4 +1,4 @@
-package com.il;
+package com.per.ilook;
 
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
