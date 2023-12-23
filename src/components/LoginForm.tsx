@@ -3,11 +3,10 @@ import {Text} from 'react-native';
 import {COLORS, FONTSIZE, SPACING} from '../theme/theme';
 import FormContainer from './FormContainer';
 import FormInput from './FormInput';
-import FormSelectorBtn from './FormSelectorBtn';
 import {isValidEmail, isValidObjField, updateError} from '../utils/methods';
 import FormSubmitBtn from './FormSubmitBtn';
 
-import axios from 'axios';
+import client from '../api/client';
 
 type UserInfo = {
   email: string;
@@ -40,10 +39,13 @@ const LoginForm = () => {
   const submitFormHandler = async () => {
     if (isValidForm()) {
       try {
-        const result = await axios.post('/sign-in', {...userInfo});
-        console.log(result.data);
+        const result = await client.post('/sign-in', {...userInfo});
+
+        if (result.data.success) {
+          setUserInfo({email: '', password: ''});
+        }
       } catch (error) {
-        console.log(error);
+        console.log('It axios: ', error);
       }
     }
   };

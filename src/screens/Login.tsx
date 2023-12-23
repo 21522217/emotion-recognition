@@ -16,6 +16,7 @@ import LoginForm from '../components/LoginForm';
 import SignupForm from '../components/SignupForm';
 
 import axios from 'axios';
+import UploadImage from '../components/UploadImage';
 
 const {width} = Dimensions.get('window');
 
@@ -57,53 +58,55 @@ const Login = () => {
     outputRange: [COLORS.secondaryLightGreyHex, COLORS.primaryDarkBlueHex],
   });
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <FormHeader
-          leftHeading="Welcome"
-          rightHeading="Back"
-          subHeading="Emotions"
-          rightHeaderOpacity={rightHeaderOpacity}
-          leftHeaderTranslateX={leftHeaderTranslateX}
-          rightHeaderTranslateY={rightHeaderTranslateY}
-        />
-      </View>
-      <View style={styles.buttonSelectContainer}>
-        <FormSelectorBtn
-          style={styles.leftFSB}
-          backgroundColor={loginColorInterpolate}
-          title="Login"
-          onPress={() => scrollView.current?.scrollTo({x: 0})}
-        />
-        <FormSelectorBtn
-          style={styles.rightFSB}
-          backgroundColor={signupColorInterpolate}
-          title="Sign up"
-          onPress={() => scrollView.current?.scrollTo({x: width})}
-        />
-      </View>
-      <ScrollView
-        ref={scrollView}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        scrollEventThrottle={16}
-        onScroll={Animated.event(
-          [
-            {
-              nativeEvent: {contentOffset: {x: animation}},
-            },
-          ],
-          {useNativeDriver: false},
-        )}>
-        <LoginForm />
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <SignupForm />
-        </ScrollView>
-      </ScrollView>
-    </View>
-  );
+  // return (
+  //   <View style={styles.container}>
+  //     <View style={styles.header}>
+  //       <FormHeader
+  //         leftHeading="Welcome"
+  //         rightHeading="Back"
+  //         subHeading="Emotions"
+  //         rightHeaderOpacity={rightHeaderOpacity}
+  //         leftHeaderTranslateX={leftHeaderTranslateX}
+  //         rightHeaderTranslateY={rightHeaderTranslateY}
+  //       />
+  //     </View>
+  //     <View style={styles.buttonSelectContainer}>
+  //       <FormSelectorBtn
+  //         style={styles.leftFSB}
+  //         backgroundColor={loginColorInterpolate}
+  //         title="Login"
+  //         onPress={() => scrollView.current?.scrollTo({x: 0})}
+  //       />
+  //       <FormSelectorBtn
+  //         style={styles.rightFSB}
+  //         backgroundColor={signupColorInterpolate}
+  //         title="Sign up"
+  //         onPress={() => scrollView.current?.scrollTo({x: width})}
+  //       />
+  //     </View>
+  //     <ScrollView
+  //       ref={scrollView}
+  //       horizontal
+  //       pagingEnabled
+  //       showsHorizontalScrollIndicator={false}
+  //       scrollEventThrottle={16}
+  //       onScroll={Animated.event(
+  //         [
+  //           {
+  //             nativeEvent: {contentOffset: {x: animation}},
+  //           },
+  //         ],
+  //         {useNativeDriver: false},
+  //       )}>
+  //       <LoginForm />
+  //       <ScrollView showsVerticalScrollIndicator={false}>
+  //         <SignupForm />
+  //       </ScrollView>
+  //     </ScrollView>
+  //   </View>
+  // );
+
+  return <UploadImage />
 };
 
 export default Login;
