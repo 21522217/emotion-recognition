@@ -14,9 +14,11 @@ import {
   Asset,
   ImagePickerResponse,
 } from 'react-native-image-picker';
+import client from '../api/client';
 
 const UploadImage = () => {
-  const [profileImageUri, setProfileImageUri] = useState<Asset[]>([]);
+  const [profileImageUri, setprofileImageUri] = useState<string>('');
+  const [uploadImageProgress, setUploadImageProgress] = useState(0)
 
   const openImageLibrary = async () => {
     if (Platform.OS === 'android') {
@@ -53,27 +55,48 @@ const UploadImage = () => {
           );
         } else if (response.assets) {
           // Handle the selected assets
-          setProfileImageUri(response.assets);
+          setprofileImageUri(response.assets[0].uri || '');
         }
       },
     );
   };
-  const uploadProfileImage = () => {};
+  const uploadProfileImage = async () => {
+    const formData = new FormData();
+    formData.append('profile', {
+      name: new Date() + '_profile',
+      uri: profileImageUri,
+      type: 'image/jpg',
+    });
+
+    try {
+      const res = await client.post('/upload-avatar', formData, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
+          Authorization:
+            'JWT eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NThkYjY3ZjRmNmRkNzU1MTgxNTcyYmQiLCJpYXQiOjE3MDM4NTc1NDEsImV4cCI6MTcwMzk0Mzk0MX0.Y_fFYiu6Twlb-4qsfv-3LqyCtlHnoiOXccdZaBKPbcg',
+        },
+        onUploadProgress: ({loaded, total}) => {setUploadImageProgress(loaded / total!)}
+      });
+
+      console.log(res.data)
+    } catch (error) {
+      console.log('Internal Upload Image error: ', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={openImageLibrary} style={styles.uploadButton}>
-        {profileImageUri[0]?.uri ? (
-          <Image
-            style={styles.uploadedImage}
-            source={{uri: profileImageUri[0]?.uri}}
-          />
+        {profileImageUri ? (
+          <Image style={styles.uploadedImage} source={{uri: profileImageUri}} />
         ) : (
           <Text style={styles.uploadButtonText}>Upload Profile Image</Text>
         )}
       </TouchableOpacity>
+      {uploadImageProgress ? <Text style={{color: COLORS.primaryBlackHex}}>{uploadImageProgress}</Text> : null}
       <Text style={styles.skipText}>Skip</Text>
-      {profileImageUri[0]?.uri ? (
+      {profileImageUri ? (
         <Text
           style={[styles.skipText, styles.upload]}
           onPress={uploadProfileImage}>
@@ -109,8 +132,8 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   uploadedImage: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   skipText: {
     color: COLORS.primaryBlackHex,

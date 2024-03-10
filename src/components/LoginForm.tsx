@@ -6,6 +6,10 @@ import FormInput from './FormInput';
 import {isValidEmail, isValidObjField, updateError} from '../utils/methods';
 import FormSubmitBtn from './FormSubmitBtn';
 
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AuthStackParamsList } from '../router/AuthStack';
+
 import client from '../api/client';
 
 type UserInfo = {
@@ -13,7 +17,12 @@ type UserInfo = {
   password: string;
 };
 
-const LoginForm = () => {
+interface SignUpFormProps {
+  navigation: NativeStackNavigationProp<AuthStackParamsList, 'Login'>;
+  // Add other props as needed
+}
+
+const LoginForm: React.FC<SignUpFormProps> = ({navigation}) => {
   const [userInfo, setUserInfo] = useState<UserInfo>({
     email: '',
     password: '',

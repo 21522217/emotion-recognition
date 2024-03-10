@@ -1,15 +1,19 @@
-import React, {useState} from 'react';
+import React from 'react';
 import FormContainer from './FormContainer';
 import FormInput from './FormInput';
 import FormSubmitBtn from './FormSubmitBtn';
-import {Text} from 'react-native';
-import {COLORS, FONTSIZE, SPACING} from '../theme/theme';
-import {isValidObjField, isValidEmail, updateError} from '../utils/methods';
-
 import {Formik, useFormik} from 'formik';
 import * as Yup from 'yup';
 
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {AuthStackParamsList} from '../router/AuthStack';
+import {StackActions} from '@react-navigation/native';
+
 import client from '../api/client';
+
+interface SignUpFormProps {
+  navigation: NativeStackNavigationProp<AuthStackParamsList, 'Login'>;
+}
 
 const validationSchema = Yup.object({
   fullname: Yup.string()
@@ -27,7 +31,7 @@ const validationSchema = Yup.object({
   ),
 });
 
-const SignupForm = () => {
+const SignupForm: React.FC<SignUpFormProps> = ({navigation}) => {
   const userInfo = {
     fullname: '',
     email: '',
@@ -35,16 +39,26 @@ const SignupForm = () => {
     confirmPassword: '',
   };
 
-  // const [userInfo, setUserInfo] = useState<UserInfor>();
-  const [error, setError] = useState<string>('');
-
   const signUp = async (values: any, formikActions: any) => {
-       const res = await client.post("/create-user", {
-        ...values
-      })
-      console.log(res.data)
-      formikActions.resetForm();
-      formikActions.setSubmitting(false);
+    const res = await client.post('/create-user', {
+      ...values,
+    });
+
+    if (res.data.success == true) {
+      const signInRes = await client.post('/sign-in', {
+        email: values.email,
+        password: values.password,
+      });
+      if (signInRes.data.success == true) {
+        navigation.dispatch(StackActions.replace('UploadImage', {
+          token: signInRes.data.token,
+        }));
+      }
+    }
+
+    console.log(res.data);
+    formikActions.resetForm();
+    formikActions.setSubmitting(false);
   };
 
   return (
